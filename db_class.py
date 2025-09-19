@@ -200,7 +200,7 @@ class DB:
         """Get all video games with author information."""
         sql = text("""
             SELECT vg._id, vg.title, vg.genre, vg.price, vg.is_published,
-it pull too                    vg.description, vg.version, vg.rating,
+                   vg.description, vg.version, vg.rating,
                    a.name as author_name, a.email as author_email
             FROM video_games vg
             LEFT JOIN authors a ON vg.author_id = a._id
