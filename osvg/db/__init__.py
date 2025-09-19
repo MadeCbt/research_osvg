@@ -2,6 +2,7 @@ from pathlib import Path
 
 from sqlalchemy import (
     Column,
+    DateTime,
     Engine,
     ForeignKeyConstraint,
     Integer,
@@ -25,42 +26,49 @@ class DB:
         self._create_tables()
 
     def _create_tables(self) -> None:
-        # datasets table
+        # Author table
+        _: Table = Table(
+            "authors",
+            self.metadata,
+            Column("_id", Integer, primary_key=True),
+            Column("name", String),
+            Column("email", String),
+            Column("github_account", String),
+            Column("github_author_api", String),
+        )
+
+        # Datasets table
         _: Table = Table(
             "datasets",
             self.metadata,
-            Column(
-                "id",
-                Integer,
-                primary_key=True,
-            ),
-            Column(
-                "name",
-                String,
-            ),
-            Column(
-                "url",
-                String,
-            ),
-            Column("type", String),
+            Column("_id", Integer, primary_key=True),
+            Column("author_id", Integer),
+            Column("name", String),
+            Column("dataset_type", String),
+            Column("date_published", DateTime),
+            Column("date_collected", DateTime),
+            Column("url", String),
+            Column("repository_url", String),
+            Column("dataset_uri", String),
+            Column("raw_dataset", String),
         )
 
-        # video_game table
-        _: Table = Table(
-            "video_games",
-            self.metadata,
-            Column(
-                "id",
-                Integer,
-                primary_key=True,
-            ),
-            Column(
-                "dataset_id",
-                Integer,
-            ),
-            Column("name", String),
-            ForeignKeyConstraint(["dataset_id"], ["datasets.id"]),
-        )
+        # # video_game table
+        # _: Table = Table(
+        #     "video_games",
+        #     self.metadata,
+        #     Column(
+        #         "id",
+        #         Integer,
+        #         primary_key=True,
+        #     ),
+        #     Column(
+        #         "dataset_id",
+        #         Integer,
+        #     ),
+        #     Column("name", String),
+        #     ForeignKeyConstraint(["dataset_id"], ["datasets.id"]),
+        # )
 
         self.metadata.create_all(bind=self.engine, checkfirst=True)
 
