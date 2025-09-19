@@ -1,20 +1,21 @@
+from datetime import datetime
 from pathlib import Path
+
 from sqlalchemy import (
+    Boolean,
     Column,
+    DateTime,
     Engine,
     ForeignKey,
     Integer,
     MetaData,
     String,
-    Text,
-    DateTime,
-    Boolean,
     Table,
+    Text,
     create_engine,
     text,
 )
 from sqlalchemy.sql import func
-from datetime import datetime
 
 
 class DB:
@@ -22,13 +23,10 @@ class DB:
         # Establish class variables
         self.db_path = db_path
         self.metadata: MetaData = MetaData()
-        
+
         # Connect to the database
-        self.engine: Engine = create_engine(
-            url=f"sqlite:///{self.db_path}",
-            echo=False
-        )
-        
+        self.engine: Engine = create_engine(url=f"sqlite:///{self.db_path}", echo=False)
+
         # Create tables and write constants if they do not exist
         self._create_tables()
         self._write_constants()
@@ -155,44 +153,50 @@ class DB:
     def insert_author(self, name: str, email: str) -> int:
         """Insert a new author and return the ID."""
         sql = text("""
-            INSERT INTO authors (name, email, created_at, is_active) 
+            INSERT INTO authors (name, email, created_at, is_active)
             VALUES (:name, :email, :created_at, :is_active)
         """)
         with self.engine.connect() as conn:
-            conn.execute(sql, {
-                "name": name,
-                "email": email,
-                "created_at": datetime.now(),
-                "is_active": True
-            })
+            conn.execute(
+                sql,
+                {
+                    "name": name,
+                    "email": email,
+                    "created_at": datetime.now(),
+                    "is_active": True,
+                },
+            )
             conn.commit()
         return self.get_last_row_id("authors")
 
     def insert_video_game(self, title: str, author_id: int, **kwargs) -> int:
         """Insert a new video game and return the ID."""
         sql = text("""
-            INSERT INTO video_games (title, author_id, repo_id, marketplace_id, 
-                                   indexer_id, description, genre, version, 
-                                   rating, price, created_at, is_published) 
-            VALUES (:title, :author_id, :repo_id, :marketplace_id, 
-                    :indexer_id, :description, :genre, :version, 
+            INSERT INTO video_games (title, author_id, repo_id, marketplace_id,
+                                   indexer_id, description, genre, version,
+                                   rating, price, created_at, is_published)
+            VALUES (:title, :author_id, :repo_id, :marketplace_id,
+                    :indexer_id, :description, :genre, :version,
                     :rating, :price, :created_at, :is_published)
         """)
         with self.engine.connect() as conn:
-            conn.execute(sql, {
-                "title": title,
-                "author_id": author_id,
-                "repo_id": kwargs.get("repo_id"),
-                "marketplace_id": kwargs.get("marketplace_id"),
-                "indexer_id": kwargs.get("indexer_id"),
-                "description": kwargs.get("description"),
-                "genre": kwargs.get("genre"),
-                "version": kwargs.get("version"),
-                "rating": kwargs.get("rating"),
-                "price": kwargs.get("price"),
-                "created_at": datetime.now(),
-                "is_published": kwargs.get("is_published", False)
-            })
+            conn.execute(
+                sql,
+                {
+                    "title": title,
+                    "author_id": author_id,
+                    "repo_id": kwargs.get("repo_id"),
+                    "marketplace_id": kwargs.get("marketplace_id"),
+                    "indexer_id": kwargs.get("indexer_id"),
+                    "description": kwargs.get("description"),
+                    "genre": kwargs.get("genre"),
+                    "version": kwargs.get("version"),
+                    "rating": kwargs.get("rating"),
+                    "price": kwargs.get("price"),
+                    "created_at": datetime.now(),
+                    "is_published": kwargs.get("is_published", False),
+                },
+            )
             conn.commit()
         return self.get_last_row_id("video_games")
 
@@ -242,9 +246,14 @@ it pull too                    vg.description, vg.version, vg.rating,
         try:
             with self.engine.connect() as conn:
                 # First delete all games by this author
-                conn.execute(text("DELETE FROM video_games WHERE author_id = :id"), {"id": author_id})
+                conn.execute(
+                    text("DELETE FROM video_games WHERE author_id = :id"),
+                    {"id": author_id},
+                )
                 # Then delete the author
-                result = conn.execute(text("DELETE FROM authors WHERE _id = :id"), {"id": author_id})
+                result = conn.execute(
+                    text("DELETE FROM authors WHERE _id = :id"), {"id": author_id}
+                )
                 conn.commit()
                 return result.rowcount > 0
         except Exception:
