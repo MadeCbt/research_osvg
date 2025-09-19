@@ -1,16 +1,27 @@
 [project]
-name = "src"
-version = "0.0.0"
-description = "Hello World"
-authors = [{ name = "Nicholas M. Synovic", email = "nicholas.synovic@gmail.com" }]
-requires-python = "~=3.13"
+name = "videogame-database"
+version = "1.0.0"
+description = "SQLite3 Video Game Database with SQLAlchemy"
+authors = [{ name = "Your Name", email = "your.email@example.com" }]
+requires-python = ">=3.8"
 readme = "README.md"
-license = "AGPL-3.0-only"
-keywords = ["Template"]
+license = "MIT"
+keywords = ["Database", "SQLAlchemy", "Video Games", "SQLite"]
 classifiers = [
-    "Development Status :: 1 - Planning",
-    "License :: OSI Approved :: GNU Affero General Public License v3",
-    "Programming Language :: Python :: 3.13"
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Database",
+    "Topic :: Software Development :: Libraries :: Python Modules"
+]
+
+dependencies = [
+    "SQLAlchemy>=2.0.0",
+    "pydantic>=2.0.0"
 ]
 dependencies = [
     "sqlalchemy>=2.0.43",
@@ -21,7 +32,7 @@ Homepage = "https://github.com/NicholasSynovic/template_python"
 Repository = "https://github.com/NicholasSynovic/template_python"
 
 [project.scripts]
-src = "src.main:main"
+videogame-db = "interface:main"
 
 
 [build-system]
