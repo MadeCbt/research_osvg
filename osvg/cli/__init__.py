@@ -1,3 +1,10 @@
+"""
+Open Source Video Game Database CLI class.
+
+Copyright (C) 2025 Nicholas M. Synovic.
+
+"""
+
 from argparse import ArgumentParser, Namespace, _SubParsersAction
 from importlib.metadata import version
 from pathlib import Path
@@ -6,7 +13,21 @@ import osvg
 
 
 class CLI:
+    """
+    Represents the command-line interface (CLI) for the osvg application.
+
+    Provides methods for parsing command-line arguments and managing the application's
+    configuration.
+
+    """
+
     def __init__(self) -> None:
+        """
+        Initialize a CLI object.
+
+        Sets the default value for the database path argument.
+
+        """
         # Set class args
         self.db_help: str = "Path to OSVG database"
 
@@ -31,6 +52,13 @@ class CLI:
         self._add_init()  # Step 0
 
     def _add_init(self) -> None:
+        """
+        Add the 'init' subparser to the argument parser.
+
+        This subparser handles the initialization commands for the `osvg`
+        application.
+
+        """
         self.init_parser: ArgumentParser = self.subparsers.add_parser(
             name="init",
             description="Step 0",
@@ -41,7 +69,16 @@ class CLI:
             type=lambda x: Path(x).resolve(),
             required=True,
             help=self.db_help,
+            dest="init.db",
         )
 
     def parse(self) -> Namespace:
+        """
+        Parse the command-line arguments.
+
+        Returns:
+            A Namespace object containing the parsed arguments. This object
+            provides access to the arguments as attributes (e.g., args.init.db).
+
+        """
         return self.parser.parse_args()
