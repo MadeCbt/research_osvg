@@ -5,10 +5,6 @@ from pathlib import Path
 import osvg
 
 
-def resolve_path(path: str) -> Path:
-    return Path(path).resolve()
-
-
 class CLI:
     def __init__(self) -> None:
         # Set class args
@@ -17,7 +13,7 @@ class CLI:
         # Create parser and subparser
         self.parser: ArgumentParser = ArgumentParser(
             prog=osvg.PROGRAM_NAME,
-            description=osvg.PROGRAM_DESCRPTION,
+            description=osvg.PROGRAM_DESCRIPTION,
         )
         self.subparsers: _SubParsersAction[ArgumentParser] = (
             self.parser.add_subparsers()
@@ -42,7 +38,7 @@ class CLI:
         self.init_parser.add_argument(
             "-d",
             "--db",
-            type=resolve_path,
+            type=lambda x: Path(x).resolve(),
             required=True,
             help=self.db_help,
         )
