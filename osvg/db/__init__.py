@@ -48,7 +48,6 @@ class DB:
             Column("url", String),
             Column("repository_url", String),
             Column("dataset_uri", String),
-            Column("raw_dataset", String),
         )
 
         # video_game table
