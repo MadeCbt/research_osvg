@@ -51,6 +51,7 @@ class CLI:
         # Implement subparsers
         self._add_init()  # Step 0
         self._add_load_datasets()  # Step 1
+        self._add_load_video_games() # Step 2
 
     def _add_init(self) -> None:
         """
@@ -93,6 +94,28 @@ class CLI:
             required=True,
             help="Path to datasets CSV file",
             dest="load_datasets.file",
+        )
+
+    def _add_load_video_games(self) -> None:
+        self.load_video_games_parser: ArgumentParser = self.subparsers.add_parser(
+            name="load-video-games",
+            description="Step 1",
+        )
+        self.load_video_games_parser.add_argument(
+            "-d",
+            "--db",
+            type=lambda x: Path(x).resolve(),
+            required=True,
+            help=self.db_help,
+            dest="load_video_games.db",
+        )
+        self.load_video_games_parser.add_argument(
+            "-f",
+            "--file",
+            type=lambda x: Path(x).resolve(),
+            required=True,
+            help="Path to datasets CSV file",
+            dest="load_video_games.file",
         )
 
     def parse(self) -> Namespace:
