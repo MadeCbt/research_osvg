@@ -14,7 +14,8 @@ classifiers = [
 
 dependencies = [
     "SQLAlchemy>=2.0.0",
-    "pydantic>=2.0.0"
+    "pandas>=2.3.2",
+    "pydantic>=2.0.0",
 ]
 
 [project.urls]
