@@ -15,6 +15,19 @@ from osvg.cli import CLI
 from osvg.db import DB
 
 
+def load_datasets_handler(df: DataFrame, db: DB) -> None:
+    # Edits `df` in place
+    df.columns = df.columns.str.lower()  # Make all columns lowercase
+    df = df.drop(columns="notes")  # Remove extra columns
+    df.to_sql(
+        name="datasets",
+        if_exists="append",
+        con=db.engine,
+        index=True,
+        index_label="_id",
+    )
+
+
 def main() -> None:
     """
     Entrypoint to the `osvg` application.
@@ -35,9 +48,11 @@ def main() -> None:
             DB(db_path=args["init.db"])
         case "load_datasets":
             db: DB = DB(db_path=args["load_datasets.db"])
-            csv_file: Path = args["load_datasets.file"]
-            df: DataFrame = pandas.read_csv(filepath_or_buffer=csv_file)
-            print(df)
+            df: DataFrame = pandas.read_csv(
+                filepath_or_buffer=args["load_datasets.file"],
+                encoding="utf-8",
+            )
+            load_datasets_handler(df=df, db=db)
         case _:
             sys.exit(1)
 
