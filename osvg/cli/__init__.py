@@ -50,6 +50,7 @@ class CLI:
 
         # Implement subparsers
         self._add_init()  # Step 0
+        self._add_load_datasets()  # Step 1
 
     def _add_init(self) -> None:
         """
@@ -70,6 +71,28 @@ class CLI:
             required=True,
             help=self.db_help,
             dest="init.db",
+        )
+
+    def _add_load_datasets(self) -> None:
+        self.load_datasets_parser: ArgumentParser = self.subparsers.add_parser(
+            name="load-datasets",
+            description="Step 1",
+        )
+        self.load_datasets_parser.add_argument(
+            "-d",
+            "--db",
+            type=lambda x: Path(x).resolve(),
+            required=True,
+            help=self.db_help,
+            dest="load_datasets.db",
+        )
+        self.load_datasets_parser.add_argument(
+            "-f",
+            "--file",
+            type=lambda x: Path(x).resolve(),
+            required=True,
+            help="Path to datasets CSV file",
+            dest="load_datasets.file",
         )
 
     def parse(self) -> Namespace:
