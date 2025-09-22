@@ -51,14 +51,16 @@ class DB:
         )
 
         # video_game table
-        # _: Table = Table(
-        #     "video_games",
-        #     self.metadata,
-        #     Column("id", Integer, primary_key=True),
-        #     Column("dataset_id", Integer)
-        #     Column("name", String)
-        #     ForeignKeyConstraint(["dataset_id"], ["datasets.id"]),
-        # )
+        _: Table = Table(
+            "video_games",
+            self.metadata,
+            Column("id", Integer, primary_key=True),
+            Column("dataset_url", String),
+            Column("name", String),
+            Column("source_code_url", String),
+            Column("steam_id", Integer),
+            # ForeignKeyConstraint(["dataset_id"], ["datasets.id"]),
+        )
 
         self.metadata.create_all(bind=self.engine, checkfirst=True)
 
