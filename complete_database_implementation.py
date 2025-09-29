@@ -437,15 +437,33 @@ class VideoGameDatabase:
                 author_repos.to_sql('author_repos', self.engine, if_exists='append', index=False, method='multi')
                 print(f"✅ Created {len(author_repos):,} author-repository relationships")
         
-        # Dataset ↔ VideoGame relationships
-        dataset_games = pd.read_sql("""
-            SELECT DISTINCT vg._id AS video_game_id, d._id AS dataset_id, 'referenced' AS link_type
+        # Dataset ↔ VideoGame relationships via pandas merges
+        # df_a: datasets lookup
+        df_datasets = pd.read_sql("SELECT _id AS dataset_id, url AS dataset_url FROM datasets", self.engine)
+        # df_b: games with their indexer URLs
+        df_games = pd.read_sql(
+            """
+            SELECT vg._id AS video_game_id, i.url AS indexer_url
             FROM video_games vg
-            JOIN indexers i ON vg.indexer_id = i._id
-            JOIN datasets d ON d.url = i.url
-        """, self.engine)
+            LEFT JOIN indexers i ON vg.indexer_id = i._id
+            WHERE i.url IS NOT NULL
+            """,
+            self.engine
+        )
+        # c: many-to-many by URL equality
+        dataset_games = (
+            df_games.merge(
+                df_datasets,
+                left_on='indexer_url',
+                right_on='dataset_url',
+                how='inner'
+            )[['dataset_id', 'video_game_id']]
+            .dropna()
+            .drop_duplicates()
+        )
         
         if not dataset_games.empty:
+            dataset_games['link_type'] = 'referenced'
             try:
                 existing = pd.read_sql("SELECT dataset_id, video_game_id FROM dataset_to_video_game", self.engine)
                 if not existing.empty:
