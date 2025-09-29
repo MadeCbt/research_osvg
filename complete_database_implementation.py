@@ -155,12 +155,12 @@ class VideoGameDatabase:
             Column('created_at', DateTime, default=func.now()),
         )
         
-        game_datasets = Table(
-            'game_datasets',
+        dataset_to_video_game = Table(
+            'dataset_to_video_game',
             self.metadata,
-            Column('game_id', Integer, ForeignKey('video_games._id'), primary_key=True),
             Column('dataset_id', Integer, ForeignKey('datasets._id'), primary_key=True),
-            Column('inclusion_reason', String(200)),
+            Column('video_game_id', Integer, ForeignKey('video_games._id'), primary_key=True),
+            Column('link_type', String(100), default='referenced'),
             Column('created_at', DateTime, default=func.now()),
         )
         
@@ -436,6 +436,29 @@ class VideoGameDatabase:
             if not author_repos.empty:
                 author_repos.to_sql('author_repos', self.engine, if_exists='append', index=False, method='multi')
                 print(f"✅ Created {len(author_repos):,} author-repository relationships")
+        
+        # Dataset ↔ VideoGame relationships
+        dataset_games = pd.read_sql("""
+            SELECT DISTINCT vg._id AS video_game_id, d._id AS dataset_id, 'referenced' AS link_type
+            FROM video_games vg
+            JOIN indexers i ON vg.indexer_id = i._id
+            JOIN datasets d ON d.url = i.url
+        """, self.engine)
+        
+        if not dataset_games.empty:
+            try:
+                existing = pd.read_sql("SELECT dataset_id, video_game_id FROM dataset_to_video_game", self.engine)
+                if not existing.empty:
+                    dataset_games['composite'] = dataset_games['dataset_id'].astype(str) + '_' + dataset_games['video_game_id'].astype(str)
+                    existing['composite'] = existing['dataset_id'].astype(str) + '_' + existing['video_game_id'].astype(str)
+                    dataset_games = dataset_games[~dataset_games['composite'].isin(existing['composite'])]
+                    dataset_games = dataset_games.drop('composite', axis=1)
+            except Exception:
+                pass
+            
+            if not dataset_games.empty:
+                dataset_games.to_sql('dataset_to_video_game', self.engine, if_exists='append', index=False, method='multi')
+                print(f"✅ Created {len(dataset_games):,} dataset-to-video_game relationships")
     
     def _show_statistics(self):
         """Show final database statistics."""
@@ -450,7 +473,8 @@ class VideoGameDatabase:
             ('datasets', 'Datasets'),
             ('game_authors', 'Game ↔ Author Links'),
             ('game_repos', 'Game ↔ Repository Links'),
-            ('author_repos', 'Author ↔ Repository Links')
+            ('author_repos', 'Author ↔ Repository Links'),
+            ('dataset_to_video_game', 'Dataset ↔ Video Game Links')
         ]
         
         for table, label in tables:
@@ -647,7 +671,7 @@ class GameDataset(Base):
         print("   1. GameAuthor - Games ↔ Authors")
         print("   2. GameRepo - Games ↔ Repositories") 
         print("   3. AuthorRepo - Authors ↔ Repositories")
-        print("   4. GameDataset - Games ↔ Datasets")
+        print("   4. DatasetToVideoGame - Datasets ↔ Video Games")
 
 
 def main():
