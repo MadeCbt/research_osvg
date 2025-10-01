@@ -68,7 +68,8 @@ class DB:
             self.metadata,
             Column("_id", Integer, primary_key=True),
             Column("video_game_id", Integer),
-            Column("response", String),
+            Column("response_status_code", Integer),
+            Column("response_json", String),
             ForeignKeyConstraint(["video_game_id"], ["video_games._id"]),
         )
 
