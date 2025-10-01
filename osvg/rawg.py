@@ -1,7 +1,9 @@
-from requests import get, Response
 from json import dumps
 
-def get_game_json(game: str, key: str)   ->  tuple[int, str]:
+from requests import Response, get
+
+
+def get_game_json(game: str, key: str) -> tuple[int, str]:
     # Construct URL
     url: str = f"https://api.rawg.io/api/games/{game}?key={key}"
 

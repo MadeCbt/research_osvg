@@ -10,13 +10,14 @@ from pathlib import Path
 
 import pandas
 from pandas import DataFrame, Series
+from progress.bar import Bar
 from pydantic import BaseModel
 
 import osvg.types as osvg_types
+from osvg import rawg
 from osvg.cli import CLI
 from osvg.db import DB
-from osvg import rawg
-from progress.bar import Bar
+
 
 def read_csv_file(filepath: Path, model: type[BaseModel]) -> DataFrame:
     # Read file
@@ -129,7 +130,11 @@ def main() -> None:
 
         case "rawg":
             # Data structure to store data
-            data: dict[str, list[str | int ]] = {"video_game_id": [], "response_status_code": [], "response_json": [],}
+            data: dict[str, list[str | int]] = {
+                "video_game_id": [],
+                "response_status_code": [],
+                "response_json": [],
+            }
 
             # Connect to the database
             db: DB = DB(db_path=args["rawg.db"])
@@ -143,7 +148,11 @@ def main() -> None:
 
             # Format video game names
             video_games_df["name"] = video_games_df["name"].str.lower()
-            video_games_df["name"] = video_games_df["name"].str.replace(r'[^a-zA-Z0-9\s]', '', regex=True,)
+            video_games_df["name"] = video_games_df["name"].str.replace(
+                r"[^a-zA-Z0-9\s]",
+                "",
+                regex=True,
+            )
             video_games_df["name"] = video_games_df["name"].str.replace(
                 pat=" and ",
                 repl="",
@@ -153,11 +162,15 @@ def main() -> None:
                 repl="-",
             )
 
-            with Bar("Getting RAWG data per game...", max=video_games_df.shape[0]) as bar:
+            with Bar(
+                "Getting RAWG data per game...", max=video_games_df.shape[0]
+            ) as bar:
                 idx: int
                 row: Series
                 for idx, row in video_games_df.iterrows():
-                    code, json_str = rawg.get_game_json(game=row["name"], key=args["rawg.key"])
+                    code, json_str = rawg.get_game_json(
+                        game=row["name"], key=args["rawg.key"]
+                    )
 
                     data["response_json"].append(json_str)
                     data["response_status_code"].append(code)
@@ -166,7 +179,6 @@ def main() -> None:
                     bar.next()
 
             db.write_df_to_table(df=DataFrame(data=data), table="rawg")
-
 
         case _:
             sys.exit(1)
