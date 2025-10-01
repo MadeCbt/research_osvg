@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from pandas import DataFrame
 from sqlalchemy import (
     Column,
     DateTime,
@@ -59,10 +60,16 @@ class DB:
             Column("video_game_id", Integer),
             Column("dataset_id", Integer),
             ForeignKeyConstraint(["dataset_id"], ["datasets._id"]),
-            ForeignKeyConstraint(["video_game_id"], ["video_games.)_id"]),
+            ForeignKeyConstraint(["video_game_id"], ["video_games._id"]),
         )
 
         self.metadata.create_all(bind=self.engine, checkfirst=True)
 
-
-DB(Path("test.db"))
+    def write_df_to_table(self, df: DataFrame, table: str) -> None:
+        df.to_sql(
+            name=table,
+            con=self.engine,
+            if_exists="append",
+            index=True,
+            index_label="_id",
+        )
