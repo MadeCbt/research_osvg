@@ -8,10 +8,7 @@ from pydantic_core import ValidationError
 
 def validate_df(df: DataFrame, model: type[BaseModel]) -> None:
     for _, row in df.iterrows():
-        try:
-            model(**row.to_dict())
-        except ValidationError:
-            print(row)
+        model(**row.to_dict())
 
 
 class VideoGamesCSV(BaseModel):
@@ -24,9 +21,9 @@ class VideoGamesCSV(BaseModel):
 class VideoGameDatasetsCSV(BaseModel):
     name: str
     url: str
-    repository_url: str
-    date_published: datetime
-    author: str
+    repository_url: Optional[str] = None
+    date_published: Optional[datetime] = None
+    author: Optional[str] = None
     dataset_type: str
     dataset_uri: str
-    notes: str
+    notes: Optional[str] = None

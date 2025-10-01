@@ -22,6 +22,8 @@ def read_csv_file(filepath: Path, model: type[BaseModel]) -> DataFrame:
     df: DataFrame = pandas.read_csv(
         filepath_or_buffer=filepath,
         encoding="utf-8",
+        engine="pyarrow",
+        date_format="%-m/%-d/%Y",
     )
 
     # Set all columns to be lower case
