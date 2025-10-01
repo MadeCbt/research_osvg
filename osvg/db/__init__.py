@@ -4,6 +4,7 @@ from sqlalchemy import (
     Column,
     DateTime,
     Engine,
+    ForeignKeyConstraint,
     Integer,
     MetaData,
     String,
@@ -25,17 +26,6 @@ class DB:
         self._create_tables()
 
     def _create_tables(self) -> None:
-        #     # Author table
-        #     _: Table = Table(
-        #         "authors",
-        #         self.metadata,
-        #         Column("_id", Integer, primary_key=True),
-        #         Column("name", String),
-        #         Column("email", String),
-        #         Column("github_account", String),
-        #         Column("github_author_api", String),
-        #     )
-
         # Datasets table
         _: Table = Table(
             "datasets",
@@ -59,7 +49,17 @@ class DB:
             Column("name", String),
             Column("source_code_url", String),
             Column("steam_id", Integer),
-            # ForeignKeyConstraint(["dataset_id"], ["datasets.id"]),
+        )
+
+        # video game to dataset table
+        _: Table = Table(
+            "video_games_to_datasets",
+            self.metadata,
+            Column("_id", Integer, primary_key=True),
+            Column("video_game_id", Integer),
+            Column("dataset_id", Integer),
+            ForeignKeyConstraint(["dataset_id"], ["datasets._id"]),
+            ForeignKeyConstraint(["video_game_id"], ["video_games.)_id"]),
         )
 
         self.metadata.create_all(bind=self.engine, checkfirst=True)
