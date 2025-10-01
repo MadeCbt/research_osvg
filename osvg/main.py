@@ -54,8 +54,6 @@ def main() -> None:
 
     # Match subparser to runner
     match subparser_command:
-        case "init":
-            DB(db_path=args["init.db"])
         case "load_datasets":
             db: DB = DB(db_path=args["load_datasets.db"])
             df: DataFrame = pandas.read_csv(

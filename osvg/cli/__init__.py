@@ -49,30 +49,8 @@ class CLI:
         )
 
         # Implement subparsers
-        self._add_init()  # Step 0
         self._add_load_datasets()  # Step 1
-        self._add_load_video_games() # Step 2
-
-    def _add_init(self) -> None:
-        """
-        Add the 'init' subparser to the argument parser.
-
-        This subparser handles the initialization commands for the `osvg`
-        application.
-
-        """
-        self.init_parser: ArgumentParser = self.subparsers.add_parser(
-            name="init",
-            description="Step 0",
-        )
-        self.init_parser.add_argument(
-            "-d",
-            "--db",
-            type=lambda x: Path(x).resolve(),
-            required=True,
-            help=self.db_help,
-            dest="init.db",
-        )
+        self._add_load_video_games()  # Step 2
 
     def _add_load_datasets(self) -> None:
         self.load_datasets_parser: ArgumentParser = self.subparsers.add_parser(
