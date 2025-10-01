@@ -54,7 +54,7 @@ class DB:
         _: Table = Table(
             "video_games",
             self.metadata,
-            Column("id", Integer, primary_key=True),
+            Column("_id", Integer, primary_key=True),
             Column("dataset_url", String),
             Column("name", String),
             Column("source_code_url", String),
