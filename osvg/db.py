@@ -46,7 +46,6 @@ class DB:
             "video_games",
             self.metadata,
             Column("_id", Integer, primary_key=True),
-            Column("dataset_url", String),
             Column("name", String),
             Column("source_code_url", String),
             Column("steam_id", Integer),
@@ -60,6 +59,16 @@ class DB:
             Column("video_game_id", Integer),
             Column("dataset_id", Integer),
             ForeignKeyConstraint(["dataset_id"], ["datasets._id"]),
+            ForeignKeyConstraint(["video_game_id"], ["video_games._id"]),
+        )
+
+        # rawg table
+        _: Table = Table(
+            "rawg",
+            self.metadata,
+            Column("_id", Integer, primary_key=True),
+            Column("video_game_id", Integer),
+            Column("response", String),
             ForeignKeyConstraint(["video_game_id"], ["video_games._id"]),
         )
 

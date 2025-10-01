@@ -50,6 +50,7 @@ class CLI:
 
         # Implement subparsers
         self._add_load()  # Step 1
+        self._add_rawg()  # Step 2
 
     def _add_load(self) -> None:
         self.load_parser: ArgumentParser = self.subparsers.add_parser(
@@ -77,6 +78,28 @@ class CLI:
             required=True,
             help="Path to datasets CSV file",
             dest="load.datasets",
+        )
+
+    def _add_rawg(self) -> None:
+        self.rawg_parser: ArgumentParser = self.subparsers.add_parser(
+            name="rawg",
+            description="Step 2",
+        )
+        self.rawg_parser.add_argument(
+            "-d",
+            "--db",
+            type=lambda x: Path(x).resolve(),
+            required=True,
+            help=self.db_help,
+            dest="rawg.db",
+        )
+        self.rawg_parser.add_argument(
+            "-k",
+            "--key",
+            type=str,
+            required=True,
+            help="RAWG developer key",
+            dest="rawg.key",
         )
 
     def parse(self) -> Namespace:

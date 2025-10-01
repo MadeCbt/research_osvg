@@ -117,6 +117,7 @@ def main() -> None:
 
             # Format DataFrames
             datasets_df = datasets_df.drop(columns="notes")
+            video_games_df = video_games_df.drop(columns="dataset_url")
 
             # Write data to tables
             db.write_df_to_table(df=datasets_df, table="datasets")
@@ -125,6 +126,26 @@ def main() -> None:
                 df=vg2ds_df,
                 table="video_games_to_datasets",
             )
+
+        case "rawg":
+            # Connect to the database
+            db: DB = DB(db_path=args["rawg.db"])
+
+            # Read video games that have a Steam ID
+            video_games_df: DataFrame = pandas.read_sql(
+                sql="SELECT * FROM video_games WHERE steam_id > -1",
+                con=db.engine,
+                index_col="_id",
+            )
+
+            # Format video game names
+            video_games_df["name"] = video_games_df["name"].str.lower()
+            video_games_df["name"] = video_games_df["name"].str.replace(
+                pat=" ",
+                repl="-",
+            )
+
+            print(video_games_df)
 
         case _:
             sys.exit(1)
