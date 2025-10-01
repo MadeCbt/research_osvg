@@ -36,27 +36,29 @@ def read_csv_file(filepath: Path, model: type[BaseModel]) -> DataFrame:
     return df
 
 
-def load_datasets_handler(df: DataFrame, db: DB) -> None:
-    df.columns = df.columns.str.lower()  # Make all columns lowercase
-    df = df.drop(columns="notes")  # Remove extra columns
-    df.to_sql(
-        name="datasets",
-        if_exists="append",
-        con=db.engine,
-        index=True,
-        index_label="_id",
-    )
+def create_video_game_to_dataset_table(
+    video_game_df: DataFrame,
+    dataset_df: DataFrame,
+) -> DataFrame:
+    # Create an index of all datasets from the dataset DataFrame
+    dataset_url_to_index = dataset_df.index.to_series(index=dataset_df["url"].unique())
 
+    # Map the index to the dataset url in the video games DataFrame
+    video_game_df["dataset_id"] = video_game_df["dataset_url"].map(dataset_url_to_index)
 
-def load_video_games_handler(df: DataFrame, db: DB) -> None:
-    df.columns = df.columns.str.lower()  # Make all columns lowercase
-    df.to_sql(
-        name="video_games",
-        if_exists="append",
-        con=db.engine,
-        index=True,
-        index_label="_id",
-    )
+    # Extract the video game and dataset DataFrame indexes into columns
+    mapping: DataFrame = video_game_df[["dataset_id", "source_code_url"]].reset_index()
+
+    # Map each source code URL to its first instance `index` value
+    unique_mapping = mapping.groupby("source_code_url")["index"].transform("first")
+
+    # Replace the index column with the first occurrence of the index
+    mapping["index"] = unique_mapping
+
+    # Rename columns
+    mapping = mapping.rename(columns={"index": "video_game_id"})
+
+    return mapping[["video_game_id", "dataset_id"]]
 
 
 def main() -> None:
@@ -90,6 +92,13 @@ def main() -> None:
                 filepath=args["load.datasets"],
                 model=osvg_types.VideoGameDatasetsCSV,
             )
+
+            video_game_to_dataset_df: DataFrame = create_video_game_to_dataset_table(
+                video_game_df=video_games_df,
+                dataset_df=datasets_df,
+            )
+
+            print(video_game_to_dataset_df)
 
         case _:
             sys.exit(1)
