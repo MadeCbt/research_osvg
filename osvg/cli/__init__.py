@@ -49,51 +49,34 @@ class CLI:
         )
 
         # Implement subparsers
-        self._add_load_datasets()  # Step 1
-        self._add_load_video_games()  # Step 2
+        self._add_load()  # Step 1
 
-    def _add_load_datasets(self) -> None:
-        self.load_datasets_parser: ArgumentParser = self.subparsers.add_parser(
-            name="load-datasets",
+    def _add_load(self) -> None:
+        self.load_parser: ArgumentParser = self.subparsers.add_parser(
+            name="load",
             description="Step 1",
         )
-        self.load_datasets_parser.add_argument(
+        self.load_parser.add_argument(
             "-d",
             "--db",
             type=lambda x: Path(x).resolve(),
             required=True,
             help=self.db_help,
-            dest="load_datasets.db",
+            dest="load.db",
         )
-        self.load_datasets_parser.add_argument(
-            "-f",
-            "--file",
+        self.load_parser.add_argument(
+            "--video-games",
+            type=lambda x: Path(x).resolve(),
+            required=True,
+            help="Path to video games CSV file",
+            dest="load.video_games",
+        )
+        self.load_parser.add_argument(
+            "--datasets",
             type=lambda x: Path(x).resolve(),
             required=True,
             help="Path to datasets CSV file",
-            dest="load_datasets.file",
-        )
-
-    def _add_load_video_games(self) -> None:
-        self.load_video_games_parser: ArgumentParser = self.subparsers.add_parser(
-            name="load-video-games",
-            description="Step 1",
-        )
-        self.load_video_games_parser.add_argument(
-            "-d",
-            "--db",
-            type=lambda x: Path(x).resolve(),
-            required=True,
-            help=self.db_help,
-            dest="load_video_games.db",
-        )
-        self.load_video_games_parser.add_argument(
-            "-f",
-            "--file",
-            type=lambda x: Path(x).resolve(),
-            required=True,
-            help="Path to datasets CSV file",
-            dest="load_video_games.file",
+            dest="load.datasets",
         )
 
     def parse(self) -> Namespace:
