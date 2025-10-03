@@ -1,35 +1,32 @@
 [project]
-name = "videogame-database"
-version = "1.0.0"
-description = "SQLite3 Video Game Database with SQLAlchemy"
-authors = [{ name = "Your Name", email = "your.email@example.com" }]
-requires-python = ">=3.8"
+name = "osvg"
+version = "0.0.1"
+description = "Open Source Video Game Database"
+authors = [{ name = "Nicholas M. Synovic", email = "nicholas.synovic@gmail.com"}]
+requires-python = "~=3.13"
 readme = "README.md"
-license = "MIT"
-keywords = ["Database", "SQLAlchemy", "Video Games", "SQLite"]
+keywords = ["Research", "Database", "Video Games", "Open Source"]
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
-    "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Topic :: Database",
-    "Topic :: Software Development :: Libraries :: Python Modules"
+    "Development Status :: 1 - Planning",
+    "License :: OSI Approved :: GNU Affero General Public License v3",
+    "Programming Language :: Python :: 3.13"
 ]
 
 dependencies = [
     "SQLAlchemy>=2.0.0",
-    "pydantic>=2.0.0"
+    "pandas>=2.3.2",
+    "progress>=1.6.1",
+    "pyarrow>=21.0.0",
+    "pydantic>=2.0.0",
+    "requests>=2.32.5",
 ]
 
 [project.urls]
-Homepage = "https://github.com/NicholasSynovic/template_python"
-Repository = "https://github.com/NicholasSynovic/template_python"
+Homepage = "https://github.com/NicholasSynovic/research_osvg"
+Repository = "://github.com/NicholasSynovic/research_osvg"
 
 [project.scripts]
-videogame-db = "interface:main"
+osvg = "osvg.main:main"
 
 
 [build-system]
